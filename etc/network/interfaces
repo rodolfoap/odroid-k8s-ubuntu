@@ -1,4 +1,12 @@
-# Read below, please.
+#
+# How to use this file:
+#
+# 	1. Fix the ETHERNET_CARD name in this file.
+# 	2. Remove the following files:
+# 		rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
+#		rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
+#	3. Reboot
+#
 
 source /etc/network/interfaces.d/*
 auto lo
@@ -12,9 +20,3 @@ netmask IP_MASK
 gateway IP_GATEWAY
 dns-nameservers IP_DNS
 
-# How to use this file:
-# 	1. Fix the ETHERNET_CARD name in this file.
-# 	2. Remove the following files:
-# 		rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
-#		rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
-#	3. Reboot

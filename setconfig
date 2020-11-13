@@ -20,7 +20,8 @@ sed 's/^/\t/' .interfaces.tmp
 
 set -x
 sudo mount ${DEVICE}1 /mnt
-sudo cp -v .interfaces.tmp /root/interfaces
+sudo cp -v .interfaces.tmp /mnt/root/interfaces
+sudo cat /mnt/root/interfaces
 sudo umount /mnt
 sync
 rm -f .*.tmp
