@@ -1,0 +1,15 @@
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+
+# Ethernet adapter 0
+auto ETHERNET_CARD
+allow-hotplug ETHERNET_CARD
+iface ETHERNET_CARD inet static
+address IP_ADDRESS
+netmask IP_MASK
+gateway IP_GATEWAY
+dns-nameservers IP_DNS
+#	Removed /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service.
+#	Removed /etc/systemd/system/multi-user.target.wants/NetworkManager.service.
+

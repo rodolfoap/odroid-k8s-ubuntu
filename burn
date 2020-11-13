@@ -7,22 +7,7 @@
 	exit
 }
 
-source .config
-$ENABLED || {
-	read -p "Config is not enabled! Please modify it: (ENTER to continue, CRTL-C to abort):" COMMAND
-	vi .config
-	exit
-}
-
-TIMESTAMP=$(date +%s)
-sed "s/TIMESTAMP/$TIMESTAMP/;s:IP_ADDRESS:$IP_ADDRESS:;s/DNS_ADDRESS/$DNS_ADDRESS/" \
-	etc/NetworkManager/system-connections/connection1.nmconnection \
-	> .connection1.nmconnection.tmp
+source ./.config
 
 xz -d < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz - | sudo dd of=${DEVICE} bs=4096
 sync
-sudo mount ${DEVICE}1/ /mnt
-sudo cp -v .connection1.nmconnection.tmp /mnt/etc/NetworkManager/connection1.nmconnection
-rm -f .connection1.nmconnection.tmp .config
-sync
-umount /mnt
