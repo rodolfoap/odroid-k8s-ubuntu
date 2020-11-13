@@ -4,18 +4,14 @@ This is a setup tool used to run a small Armbian cluster
 
 ## Setup
 
-1. Setup Armbian/Buster
+1. Setup the SD card with Armbian/Buster. Download armbian and use the `burn` script
+2. Setup Armbian/Buster: run the `setconfig` script
+3. Boot. Find the DHCP lease and connect via ssh. Armbian default root password is one, two, three, four. The first connection will force to modify it.
+4. Follow the instructions attentively. Do not modify locale/language.
+5. Move the /tmp/interfaces file to /etc/network/interfaces. Set the missing parameters.
+6. Run the following commands to disable NetworkManager:
 ```
-dmesg
-xz -d < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz - | dd of=/dev/sdc bs=4096
-mount /dev/sdc1 /mnt
-vi etc/NetworkManager/system-connections/Wired\ connection\ 1.nmconnection # Fix the IP address
-cp etc/NetworkManager/system-connections/Wired\ connection\ 1.nmconnection /mnt/etc/NetworkManager/system-connections/
-umount /mnt
-reboot
+rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
+rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 ```
-
-2. Boot
-
-* Armbian default root password is one, two, three, four. The first connection will force to modify it.
-* 
+7. Reboot.
