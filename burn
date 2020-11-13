@@ -9,5 +9,5 @@
 
 source ./.config
 
-xz -d < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz - | sudo dd of=${DEVICE} bs=4096
+xz -d - < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz | sudo dd of=${DEVICE} bs=4096
 sync
