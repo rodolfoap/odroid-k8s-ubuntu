@@ -42,9 +42,15 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 export KUBECONFIG=$HOME/.kube/config
 echo "export KUBECONFIG=$HOME/.kube/config" | tee -a ~/.bashrc
 
-kubectl taint nodes --all node-role.kubernetes.io/master-
-
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl get nodes,all,pv,pvc,ep
 kubectl get pods --all-namespaces
+sudo journalctl -u service-name.service
+
+# Make the master a worker
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+ON EACH NODE, as root:
+
+kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
 
