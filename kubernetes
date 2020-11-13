@@ -4,6 +4,20 @@
 sudo curl -sL get.docker.com|sh
 sudo usermod -aG docker rodolfoap
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
+cat > /etc/docker/daemon.json << EOF
+{
+   "exec-opts": ["native.cgroupdriver=systemd"],
+   "log-driver": "json-file",
+   "log-opts": {
+     "max-size": "100m"
+   },
+   "storage-driver": "overlay2"
+}
+EOF
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+
 sudo apt-get update
 sudo apt-get install -y kubeadm
 update-alternatives --set iptables /usr/sbin/iptables-legacy
