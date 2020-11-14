@@ -1,8 +1,8 @@
-# Armbian cluster
+# OdroidMC1/Armbian cluster
 
 This is a setup tool used to run a small Armbian cluster
 
-## Setup
+## Odroid setup
 
 * Setup the SD card with Armbian/Buster. Download armbian and use the `burn` script
 * Setup Armbian/Buster networking: run the `setconfig` script, check the instructions
@@ -36,9 +36,13 @@ apt update
 apt dist-upgrade
 ```
 * Reboot.
-# https://wiki.learnlinux.tv/index.php/How_to_build_your_own_Raspberry_Pi_Kubernetes_Cluster
-# https://www.youtube.com/watch?v=B2wAJ5FLOYw
 
+## Kubernetes
+
+* https://wiki.learnlinux.tv/index.php/How_to_build_your_own_Raspberry_Pi_Kubernetes_Cluster
+* https://www.youtube.com/watch?v=B2wAJ5FLOYw
+
+```
 sudo curl -sL get.docker.com|sh
 sudo usermod -aG docker rodolfoap
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
@@ -105,4 +109,5 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 ON EACH NODE, as root:
 
 kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
+```
 
