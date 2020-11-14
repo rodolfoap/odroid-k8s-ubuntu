@@ -25,17 +25,20 @@ Repeat password: ************
 Please provide your real name (eg. John Doe): Docker
 ...
 ```
+
 * Change the password!
 * Modify the hostname: `vi -o /etc/hosts /etc/hostname`
 * Move the /tmp/interfaces file to /etc/network/interfaces. Set the missing parameters.
 * Run the following commands to disable NetworkManager and update:
+
 ```
 rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
 rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 apt update
 apt dist-upgrade
 ```
-* Reboot.
+
+* Reboot
 
 ## Kubernetes
 
@@ -43,10 +46,6 @@ apt dist-upgrade
 * https://www.youtube.com/watch?v=B2wAJ5FLOYw
 
 ```
-sudo curl -sL get.docker.com|sh
-sudo usermod -aG docker rodolfoap
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-
 sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
 cat > /etc/docker/daemon.json << EOF
 {
@@ -58,22 +57,30 @@ cat > /etc/docker/daemon.json << EOF
    "storage-driver": "overlay2"
 }
 EOF
+
+curl -sL get.docker.com|sh
+usermod -aG docker rodolfoap
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 
-sudo apt-get update
-sudo apt-get install -y kubeadm
+apt-get update
+apt-get install -y kubeadm kubectl kubelet
 update-alternatives --set iptables /usr/sbin/iptables-legacy
-sudo apt-get install -y kubectl
-sudo apt-get install -y kubelet
 lsblk
 wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh -O cgroups_check && chmod +x cgroups_check
 ./cgroups_check
 swapoff -a
-On the master:
-	kubeadm init --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
+```
+
+## Master Node
+```
+kubeadm init --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
+```
 
 Which will output something like...
 
+```
 	Your Kubernetes control-plane has initialized successfully!
 
 	To start using your cluster, you need to run the following as a regular user:
@@ -89,9 +96,15 @@ Which will output something like...
 	Then you can join any number of worker nodes by running the following on each as root:
 
 	kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
+```
 
-AS A REGULAR USER:
+* **Save the last output on the MASTER node, in the file** `/root/kubejoin`.
 
+## Worker Nodes
+
+* **As a regular user**:
+
+```
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
@@ -102,12 +115,16 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 kubectl get nodes,all,pv,pvc,ep
 kubectl get pods --all-namespaces
 sudo journalctl -u service-name.service
-
-# Make the master a worker
-kubectl taint nodes --all node-role.kubernetes.io/master-
-
-ON EACH NODE, as root:
-
-kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
 ```
 
+### Make the master a worker
+
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+* **On each node, as root**:
+
+```
+kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
+```
