@@ -38,6 +38,12 @@ apt update
 apt dist-upgrade
 ```
 
+Copy the config files:
+```
+scp root/.bashrc mc1:/root/
+...
+```
+
 * Reboot
 
 ## Kubernetes
