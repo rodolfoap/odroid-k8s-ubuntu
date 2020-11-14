@@ -100,8 +100,6 @@ Which will output something like...
 
 * **Save the last output on the MASTER node, in the file** `/root/kubejoin`.
 
-## Worker Nodes
-
 * **As a regular user**:
 
 ```
@@ -123,7 +121,9 @@ sudo journalctl -u service-name.service
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-* **On each node, as root**:
+## Worker Nodes
+
+* **On each node, as root**, run the `kubeadm join` command saved in the MASTER node, in the file** `/root/kubejoin`.
 
 ```
 kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
