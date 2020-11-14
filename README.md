@@ -40,8 +40,13 @@ apt dist-upgrade
 
 Copy the config files:
 ```
+# Example single files
 for a in mc{1..4}; do scp root/.bashrc $a:/root/; done
 for a in mc{1..4}; do scp root/.bashrc $a:/home/docker/; done
+
+# Example complete directories
+for a in mc{1..4}; do scp -pr home/.docker/ $a:/home/docker/.docker/; done
+for a in mc{1..4}; do scp -pr root/.docker/ $a:/root/.docker/; done
 ...
 ```
 
