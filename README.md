@@ -40,7 +40,8 @@ apt dist-upgrade
 
 Copy the config files:
 ```
-scp root/.bashrc mc1:/root/
+for a in mc{1..4}; do scp root/.bashrc $a:/root/; done
+for a in mc{1..4}; do scp root/.bashrc $a:/home/docker/; done
 ...
 ```
 
