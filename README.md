@@ -4,10 +4,12 @@ This is a setup tool used to run a small Armbian cluster
 
 ## Odroid setup
 
-* Setup the SD card with Armbian/Buster: Download armbian within the repository and use the `burn` script
-* Setup Armbian/Buster networking: run the `setconfig` script, check the instructions
-* Boot. Find the DHCP lease and connect via ssh. Armbian default root password is one, two, three, four. The first connection will force to modify it.
-* Follow the instructions attentively. Do not modify locale/language.
+* Download armbian on this directory.
+* Put an SD card to some slot. Find the device it is referred on (e.g. `/dev/sdc1`).
+* `./burn` will setup the SD card with Armbian/Buster.
+* `./save` will save install data to the card. Normally, private data. If you don't have access to the `/dat` directory, just continue, this document shows how to configure the system.
+* Insert the SD card on the MC1. Boot. Find the DHCP lease and connect to it via ssh.
+* Follow this instructions attentively:
 ```
 $ ssh root@192.168.1.26
 ...
@@ -18,7 +20,7 @@ Repeat password: ************
 ...
 Do you want to set locales and console keyboard automatically from your location [Y/n] N
 ...
-Please provide a username (eg. your forename): docker
+Please provide a username (eg. your forename): rodolfoap
 Create password: ************
 Repeat password: ************
 ...
@@ -28,27 +30,64 @@ Please provide your real name (eg. John Doe): RodolfoAP
 
 * Change the password!
 * Modify the hostname: `vi -o /etc/hosts /etc/hostname`
-* Move the /tmp/interfaces file to /etc/network/interfaces. Set the missing parameters.
-* Run the following commands to disable swap, NetworkManager and update:
-
+* Get the ethernet card name using `ifconfig`.
+* Create an /etc/network/interfaces file following this model (CAREFUL! the card name must be the one obtained with `ifconfig`):
 ```
-echo "blacklist zram" >> /etc/blacklist-odroid.conf
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+
+auto enx001e05372bb1
+allow-hotplug enx001e05372bb1
+iface enx001e05372bb1 inet static
+address 192.168.1.11
+netmask 255.255.255.0
+gateway 192.168.1.1
+dns-nameservers 192.168.1.1
+```
+
+* Run the following commands to disable NetworkManager:
+```
 rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
 rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
+```
+
+* Update, install whatever you need
+```
 apt update
 apt dist-upgrade
+apt install mc
 ```
 
-Copy the config files:
+* Add `/etc/docker/daemon.json`:
 ```
-# Example single files
-for a in mc{1..4}; do scp root/.bashrc $a:/root/; done
-for a in mc{1..4}; do scp root/.bashrc $a:/home/docker/; done
+cat << 'EOF' > /etc/docker/daemon.json
+{    
+	"exec-opts": ["native.cgroupdriver=systemd"],    
+	"log-driver": "json-file",    
+	"log-opts": {    
+		"max-size": "100m"    
+	},    
+	"storage-driver": "overlay2"    
+}
+EOF
+```
 
-# Example complete directories
-for a in mc{1..4}; do scp -pr home/.docker/ $a:/home/docker/.docker/; done
-for a in mc{1..4}; do scp -pr root/.docker/ $a:/root/.docker/; done
-...
+* Enable IP forwarding and use classic iptables:
+```
+sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
+update-alternatives --set iptables /usr/sbin/iptables-legacy
+```
+
+* Disable swap (didn't found another way):
+```
+cat << 'EOF' > /etc/rc.local
+#!/bin/sh
+
+/usr/sbin/swapoff -a
+exit 0
+EOF
+
 ```
 
 * Reboot
@@ -60,33 +99,24 @@ for a in mc{1..4}; do scp -pr root/.docker/ $a:/root/.docker/; done
 
 ```
 swapoff -a # Just in case, check /proc/swaps being empty
-sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
-cat > /etc/docker/daemon.json << EOF
-{
-   "exec-opts": ["native.cgroupdriver=systemd"],
-   "log-driver": "json-file",
-   "log-opts": {
-     "max-size": "100m"
-   },
-   "storage-driver": "overlay2"
-}
-EOF
 
 curl -sL get.docker.com|sh
 usermod -aG docker rodolfoap
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-
 apt-get update
 apt-get install -y kubeadm kubectl kubelet
-update-alternatives --set iptables /usr/sbin/iptables-legacy
-lsblk
+```
+
+* You can check _cgroups_ validity:
+```
 wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh -O cgroups_check && chmod +x cgroups_check
 ./cgroups_check
 ```
 
 ## Master Node
+
 ```
 kubeadm init --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
 ```
@@ -111,9 +141,10 @@ Which will output something like...
 	kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
 ```
 
-* **Save the last output on the MASTER node, in the file** `/root/kubejoin`.
+* **Save** the last output on the MASTER node, in the file `/root/kubejoin`.
+* Verify that the last output was **saved** on the MASTER node, in the file `/root/kubejoin`!!!
 
-* **As a regular user**:
+* As a regular user:
 
 ```
 mkdir -p $HOME/.kube
@@ -136,14 +167,21 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 ## Worker Nodes
 
-* **On each node, as root**, run the `kubeadm join` command saved in the MASTER node, in the file** `/root/kubejoin`.
+* On each node, as root, run the `kubeadm join` command saved in the MASTER node, in the file `/root/kubejoin`.
 
 ```
 kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
 ```
 
-## Some helpers...
+## Some personal helpers...
 
 ```
 for a in mc{1..4}; do ssh.$a apt install -y mc & done
+
+# Example single files
+for a in mc{1..4}; do scp root/.bashrc $a:/root/; done
+
+# Example complete directories
+for a in mc{1..4}; do scp -pr home/.docker/ $a:/home/docker/.docker/; done
+...
 ```

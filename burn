@@ -1,13 +1,6 @@
 #!/bin/bash
 
-[ -f .config ] || {
-	read -p "No config found; please edit it before execution (ENTER to continue, CRTL-C to abort):" COMMAND
-	cp config .config
-	vi .config
-	exit
-}
+[ -z "$1" ] && { echo "Usage: $0 [DEVICE] # e.g. /dev/sdc"; exit; }
 
-source ./.config
-
-xz -d - < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz | sudo dd of=${DEVICE} bs=4096
+xz -d - < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz | sudo dd of=${1} bs=4096
 sync
