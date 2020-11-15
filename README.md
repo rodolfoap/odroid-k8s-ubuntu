@@ -29,9 +29,10 @@ Please provide your real name (eg. John Doe): Docker
 * Change the password!
 * Modify the hostname: `vi -o /etc/hosts /etc/hostname`
 * Move the /tmp/interfaces file to /etc/network/interfaces. Set the missing parameters.
-* Run the following commands to disable NetworkManager and update:
+* Run the following commands to disable swap, NetworkManager and update:
 
 ```
+systemctl mask dev-zram1.swap
 rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
 rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 apt update
