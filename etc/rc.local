@@ -1,3 +1,0 @@
-#!/bin/sh
-/usr/sbin/swapoff -a
-exit 0
