@@ -1,6 +1,10 @@
-# OdroidMC1/Armbian cluster
+# OdroidMC1/Kubernetes/Armbian cluster
 
-This is a setup tool used to run a small Armbian cluster
+The Odroid-MC1: https://www.hardkernel.com/shop/odroid-mc1-my-cluster-one-with-32-cpu-cores-and-8gb-dram/
+
+![OcroidMC1](https://github.com/rodolfoap/odroid-k8s-armbian/blob/master/mc1.jpg)
+
+This is a setup reference to install and run a small Odroid-MC1+Armbian+Kubernetes cluster.
 
 ## Odroid setup
 
