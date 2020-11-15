@@ -98,6 +98,7 @@ EOF
 
 ```
 
+* Using `armbian-config` -> `System` -> `Other`, switch to a kernel 5.7 or higher, for example `linux-image-dev-odroidxu4/20/08/01, 5.7.15-odroidxu4`.
 * Reboot
 
 ## Kubernetes
