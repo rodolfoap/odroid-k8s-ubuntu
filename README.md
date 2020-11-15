@@ -39,7 +39,7 @@ Please provide your real name (eg. John Doe): RodolfoAP
 * Change the password!
 * Modify the hostname: `vi -o /etc/hosts /etc/hostname`
 * Get the ethernet card name using `ifconfig`.
-* Create an /etc/network/interfaces file following this model (CAREFUL! the card name must be the one obtained with `ifconfig`):
+* `./gen.etc-network-interfaces` can be used to generate the `/etc/network/interfaces` file.
 ```
 source /etc/network/interfaces.d/*
 auto lo
