@@ -9,6 +9,10 @@ This is a setup reference to install and run a small Odroid-MC1+Armbian+Kubernet
 ## Odroid setup
 
 * Download armbian on this directory.
+```
+wget https://mirrors.netix.net/armbian/dl/odroidxu4/archive/Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz
+```
+
 * Put an SD card to some slot. Find the device it is referred on (e.g. `/dev/sdc1`).
 * `./burn` will setup the SD card with Armbian/Buster.
 * `./save` will save install data to the card. Normally, private data. If you don't have access to the `/dat` directory, just continue, this document shows how to configure the system.
