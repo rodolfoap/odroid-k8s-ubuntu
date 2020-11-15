@@ -16,5 +16,8 @@
 * How kubernetes deployment works:
 	* https://www.youtube.com/watch?v=mNK14yXIZF4
 
-* Kubernetes deployment tutorial - Yaml explained demo
+* Kubernetes deployment tutorial - Yaml explained demo:
 	* https://www.youtube.com/watch?v=y_vy9NVeCzo
+
+* An Intro to Google's Kubernetes and How to Use It:
+	https://www.ctl.io/developers/blog/post/what-is-kubernetes-and-how-to-use-it/
