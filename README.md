@@ -32,7 +32,7 @@ Please provide your real name (eg. John Doe): Docker
 * Run the following commands to disable swap, NetworkManager and update:
 
 ```
-systemctl mask dev-zram1.swap
+echo "blacklist zram" >> /etc/blacklist-odroid.conf
 rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
 rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 apt update
@@ -59,6 +59,7 @@ for a in mc{1..4}; do scp -pr root/.docker/ $a:/root/.docker/; done
 * https://www.youtube.com/watch?v=B2wAJ5FLOYw
 
 ```
+swapoff -a # Just in case, check /proc/swaps being empty
 sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
 cat > /etc/docker/daemon.json << EOF
 {
@@ -83,7 +84,6 @@ update-alternatives --set iptables /usr/sbin/iptables-legacy
 lsblk
 wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh -O cgroups_check && chmod +x cgroups_check
 ./cgroups_check
-swapoff -a
 ```
 
 ## Master Node
