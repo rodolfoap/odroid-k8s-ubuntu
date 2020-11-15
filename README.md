@@ -194,3 +194,16 @@ for a in mc{1..4}; do scp root/.bashrc $a:/root/; done
 for a in mc{1..4}; do scp -pr home/.docker/ $a:/home/docker/.docker/; done
 ...
 ```
+## Tmux Broadcast application
+
+* Just launch the app:
+```
+./ssh.all
+```
+
+Shortcuts:
+
+* `F5` activate broadcast
+* `F6` deactivate broadcast
+* `F7` switch to the previous pane
+* `F8` switch to the next pane

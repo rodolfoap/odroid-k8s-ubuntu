@@ -1,0 +1,21 @@
+#!/usr/bin/tmux source-file
+
+bind -n F5  setw synchronize-panes on
+bind -n F6  setw synchronize-panes off
+bind -n F7  select-pane -t :.-
+bind -n F8  select-pane -t :.+
+bind -n F10 detach
+
+new-session -d
+split-window -d -t 0 -v
+
+split-window -d -t 1 -h
+split-window -d -t 0 -h
+
+send-keys -t 0 ssh.mc1 enter
+send-keys -t 1 ssh.mc2 enter
+send-keys -t 2 ssh.mc3 enter
+send-keys -t 3 ssh.mc4 enter
+
+select-pane -t 0
+attach
