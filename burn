@@ -1,6 +1,13 @@
 #!/bin/bash
 
-[ -z "$1" ] && { echo "Usage: $0 [DEVICE] # e.g. /dev/sdc"; exit; }
+DISTRO=Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz
 
-xz -d - < Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz | sudo dd of=${1} bs=4096
+[ -z "${1}" ] && { echo "Usage: $0 [DEVICE] # e.g. /dev/sdc"; exit; }
+[ -f ${DISTRO} ] || {
+	echo Distro not found. Getting it...
+	wget https://mirrors.netix.net/armbian/dl/odroidxu4/archive/${DISTRO}
+	echo Done.
+}
+
+xz -d - < ${DISTRO} | sudo dd of=${1} bs=4096
 sync
