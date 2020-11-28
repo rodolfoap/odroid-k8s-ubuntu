@@ -64,19 +64,19 @@ rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 ```
 apt update
 apt dist-upgrade
-apt install mc
+apt install mc kubectx
 ```
 
 * Add `/etc/docker/daemon.json`:
 ```
 cat << 'EOF' > /etc/docker/daemon.json
-{    
-	"exec-opts": ["native.cgroupdriver=systemd"],    
-	"log-driver": "json-file",    
-	"log-opts": {    
-		"max-size": "100m"    
-	},    
-	"storage-driver": "overlay2"    
+{
+	"exec-opts": ["native.cgroupdriver=systemd"],
+	"log-driver": "json-file",
+	"log-opts": {
+		"max-size": "100m"
+	},
+	"storage-driver": "overlay2"
 }
 EOF
 ```
