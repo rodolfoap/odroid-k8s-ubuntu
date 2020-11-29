@@ -3,7 +3,7 @@
 ##########################################################################
 # /etc/network/interfaces
 
-[ -z "$3" ] && { 
+[ -z "$3" ] && {
 cat << EOF
 
 Usage:   $0 [IP/MASK GW_SUFFIX DNS_SUFFIX]
@@ -30,7 +30,7 @@ iface ${CARD} inet static
 address ${ADDRESS}
 netmask ${NETMASK}
 gateway ${NETWORK}.${2}
-dns-nameservers  ${NETWORK}.${3}
+dns-nameservers ${NETWORK}.${3}
 EOF
 
 cat interfaces
