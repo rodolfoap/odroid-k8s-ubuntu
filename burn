@@ -1,11 +1,11 @@
 #!/bin/bash
 
-DISTRO=Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz
+DISTRO=Armbian_20.11_Odroidxu4_buster_legacy_4.14.204.img.xz
 
 [ -z "${1}" ] && { echo "Usage: $0 [DEVICE] # e.g. /dev/sdc"; exit; }
 [ -f ${DISTRO} ] || {
 	echo Distro not found. Getting it...
-	wget https://mirrors.netix.net/armbian/dl/odroidxu4/archive/${DISTRO}
+	wget https://mirrors.dotsrc.org/armbian-dl/odroidxu4/archive/${DISTRO}
 	echo Done.
 }
 
