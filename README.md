@@ -127,7 +127,7 @@ wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config
 ## Master Node
 
 ```
-kubeadm init --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
+kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
 ```
 
 Which will output something like...
