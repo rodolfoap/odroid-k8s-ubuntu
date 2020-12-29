@@ -64,7 +64,7 @@ rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 ```
 apt update
 apt dist-upgrade
-apt install mc kubectx
+apt install mc
 ```
 
 * Add `/etc/docker/daemon.json`:
@@ -119,11 +119,11 @@ swapoff -a # Just in case, check /proc/swaps being empty
 
 curl -sL get.docker.com|sh
 usermod -aG docker rodolfoap
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update
-apt-get install -y kubeadm kubectl kubelet
+apt-get install -y kubeadm kubectl kubelet kubectx
 ```
 
 * You can check _cgroups_ validity:
@@ -135,6 +135,7 @@ wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config
 ## Master Node
 
 ```
+kubeadm config images pull
 kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
 ```
 
@@ -160,6 +161,13 @@ Which will output something like...
 
 * **Save** the last output on the MASTER node, in the file `/root/kubejoin`.
 * Verify that the last output was **saved** on the MASTER node, in the file `/root/kubejoin`!!!
+* Verify that `/var/lib/kubelet/config.yaml` includes:
+```
+...
+cgroupDriver: systemd
+failSwapOn: false
+
+```
 
 * As a regular user:
 
@@ -218,3 +226,13 @@ Shortcuts:
 * `F6` deactivate broadcast
 * `F7` switch to the previous pane
 * `F8` switch to the next pane
+
+# Bar reinstalls
+
+* It is difficult to pin the precise error, but after reinstalling `Kubernetes` multiple times, a weird behavior occurred (https://superuser.com/questions/1613126/).
+
+Apparently the solution was to:
+
+	* Include `--apiserver-advertise-address=0.0.0.0` in `kubeadm init`;
+	* include `cgroupDriver: systemd` in `/var/lib/kubelet/config.yaml` before installing Flannel;
+	* include `failSwapOn: false` in `/var/lib/kubelet/config.yaml` before installing Flannel.
