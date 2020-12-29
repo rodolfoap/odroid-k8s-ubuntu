@@ -87,6 +87,14 @@ sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
 update-alternatives --set iptables /usr/sbin/iptables-legacy
 ```
 
+* Disable IPv6:
+```
+$ tail /etc/sysctl.conf
+...
+net.ipv6.conf.all.disable_ipv6=1
+net.ipv6.conf.default.disable_ipv6=1
+```
+
 * Disable swap (didn't found another way):
 ```
 cat << 'EOF' > /etc/rc.local
