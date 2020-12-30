@@ -37,6 +37,7 @@ Please provide your real name (eg. John Doe): RodolfoAP
 ```
 
 * Change the password!
+* If required, change de locale to en_US.UTF8: `dpkg-reconfigure locales`
 * Modify the hostname: `vi -o /etc/hosts /etc/hostname`
 * Get the ethernet card name using `ifconfig`.
 * `./gen.etc-network-interfaces` can be used to generate the `/etc/network/interfaces` file.
@@ -63,7 +64,7 @@ rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 * Update, install whatever you need
 ```
 apt update
-apt dist-upgrade
+apt full-upgrade
 apt install mc
 ```
 
@@ -136,7 +137,12 @@ wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config
 
 ```
 kubeadm config images pull
-kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
+
+# In case of requiring a different CIDR,
+#kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr 10.10.0.0/16 --service-cidr 10.11.0.0/16
+
+# Or the common one, ready for Flannel to run,
+kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr=10.244.0.0/16 # Common one
 ```
 
 Which will output something like...
@@ -179,7 +185,9 @@ export KUBECONFIG=$HOME/.kube/config
 echo "export KUBECONFIG=$HOME/.kube/config" | tee -a ~/.bashrc
 
 # Required to have a proper flannel configuration, when using the 10.10.0.0/16 network
-curl -s https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml|sed 's/10\.244\.0\.0/10.10.0.0/' > kube-flannel.yml
+# Or, in case of a different CIDR...
+# curl -s https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml|sed 's/10\.244\.0\.0/10.10.0.0/' > kube-flannel.yml
+wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl apply -f kube-flannel.yml
 
 kubectl get nodes,all,pv,pvc,ep
@@ -200,6 +208,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 kubeadm join 192.168.1.91:6443 --token o255i5.bian2b1m6hcd3yvn --discovery-token-ca-cert-hash sha256:134e4bef7cee2b5548e5ceb04bbf3c5a0a7ca3b7dda66f9e14588a685141edbc
 ```
+**The installation has finished.**
 
 ## Some personal helpers...
 
@@ -227,7 +236,7 @@ Shortcuts:
 * `F7` switch to the previous pane
 * `F8` switch to the next pane
 
-# Bar reinstalls
+## Bad reinstalls
 
 * It is difficult to pin the precise error, but after reinstalling `Kubernetes` multiple times, a weird behavior occurred (https://superuser.com/questions/1613126/).
 
