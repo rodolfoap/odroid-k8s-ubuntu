@@ -2,15 +2,14 @@
 
 The Odroid-MC1: https://www.hardkernel.com/shop/odroid-mc1-my-cluster-one-with-32-cpu-cores-and-8gb-dram/
 
-![OcroidMC1](https://github.com/rodolfoap/odroid-k8s-armbian/blob/master/mc1.jpg)
+![OcroidMC1](https://github.com/rodolfoap/odroid-k8s-ubuntu/blob/master/mc1.jpg)
 
-This is a setup reference to install and run a small Odroid-MC1+Armbian+Kubernetes cluster.
+This is a setup reference to install and run a small Odroid-MC1+Ubuntu+Kubernetes cluster.
 
 ## Odroid setup
 
 * Download Ubuntu on this directory.
 ```
-wget https://odroid.in/ubuntu_20.04lts/XU3_XU4_MC1_HC1_HC2/ubuntu-20.04.1-5.4-minimal-odroid-xu4-20200812.img.xz
 wget http://de.eu.odroid.in/ubuntu_20.04lts/XU3_XU4_MC1_HC1_HC2/ubuntu-20.04-5.4-minimal-odroid-xu4-20210112.img.xz
 ```
 
@@ -25,11 +24,11 @@ $ ssh root@192.168.1.26
 root@192.168.1.26's password: odroid
 
 useradd -m -s /bin/bash rodolfoap
-passwd
 passwd rodolfoap
+passwd
 
 apt update
-apt -y install mc lsof rsync
+apt -y install mc lsof rsync curl
 ...
 ```
 * Change the password!
@@ -45,7 +44,7 @@ network:
   ethernets:
     eth0:
       addresses:
-        - 192.168.1.91/24
+        - 192.168.1.26/24
       gateway4: 192.168.1.254
       nameservers:
         search: [ lan ]
@@ -105,20 +104,17 @@ apt full-upgrade
 ```
 swapoff -a # Just in case, check /proc/swaps being empty
 
-curl -sL get.docker.com|sh
+### curl -sL get.docker.com|sh
+apt install docker.io
 usermod -aG docker rodolfoap
+systemctl unmask docker
+systemctl enable --now docker
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update
-apt-get install -y kubeadm kubectl kubectx # Master
-apt-get install -y kubeadm kubelet         # Workers
-```
-
-* You can check _cgroups_ validity:
-```
-wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh -O cgroups_check && chmod +x cgroups_check
-./cgroups_check
+apt-get install -y kubeadm kubectl # Master
+apt-get install -y kubeadm kubelet # Workers
 ```
 
 ## Master Node
