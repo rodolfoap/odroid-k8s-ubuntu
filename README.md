@@ -93,6 +93,7 @@ EOF
 * Update distro:
 ```
 apt full-upgrade
+apt-get install linux-image-5.8.0-38-generic linux-headers-5.8.0-38-generic
 ```
 * Reboot
 
