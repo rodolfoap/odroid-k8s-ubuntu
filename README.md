@@ -1,4 +1,4 @@
-# OdroidMC1/Kubernetes/Armbian cluster
+# OdroidMC1/Kubernetes/Ubuntu cluster
 
 The Odroid-MC1: https://www.hardkernel.com/shop/odroid-mc1-my-cluster-one-with-32-cpu-cores-and-8gb-dram/
 
@@ -8,64 +8,48 @@ This is a setup reference to install and run a small Odroid-MC1+Armbian+Kubernet
 
 ## Odroid setup
 
-* Download armbian on this directory.
+* Download Ubuntu on this directory.
 ```
-wget https://mirrors.netix.net/armbian/dl/odroidxu4/archive/Armbian_20.08.1_Odroidxu4_buster_legacy_4.14.195.img.xz
+wget https://odroid.in/ubuntu_20.04lts/XU3_XU4_MC1_HC1_HC2/ubuntu-20.04.1-5.4-minimal-odroid-xu4-20200812.img.xz
+wget http://de.eu.odroid.in/ubuntu_20.04lts/XU3_XU4_MC1_HC1_HC2/ubuntu-20.04-5.4-minimal-odroid-xu4-20210112.img.xz
 ```
 
 * Put an SD card to some slot. Find the device it is referred on (e.g. `/dev/sdc1`).
-* `./burn` will setup the SD card with Armbian/Buster.
+* `./burn` will setup the SD card with Ubuntu/Focal
 * `./save` will save install data to the card. Normally, private data. If you don't have access to the `/dat` directory, just continue, this document shows how to configure the system.
 * Insert the SD card on the MC1. Boot. Find the DHCP lease and connect to it via ssh.
 * Follow this instructions attentively:
 ```
 $ ssh root@192.168.1.26
 ...
-root@192.168.1.26's password: 1234
-...
-New root password: ************
-Repeat password: ************
-...
-Do you want to set locales and console keyboard automatically from your location [Y/n] N
-...
-Please provide a username (eg. your forename): rodolfoap
-Create password: ************
-Repeat password: ************
-...
-Please provide your real name (eg. John Doe): RodolfoAP
-...
-```
+root@192.168.1.26's password: odroid
 
-* Change the password!
-* If required, change de locale to en_US.UTF8: `dpkg-reconfigure locales`
-* Modify the hostname: `vi -o /etc/hosts /etc/hostname`
-* Get the ethernet card name using `ifconfig`.
-* `./gen.etc-network-interfaces` can be used to generate the `/etc/network/interfaces` file.
-```
-source /etc/network/interfaces.d/*
-auto lo
-iface lo inet loopback
+useradd -m -s /bin/bash rodolfoap
+passwd
+passwd rodolfoap
 
-auto enx001e05372bb1
-allow-hotplug enx001e05372bb1
-iface enx001e05372bb1 inet static
-address 192.168.1.11
-netmask 255.255.255.0
-gateway 192.168.1.1
-dns-nameservers 192.168.1.1
-```
-
-* Run the following commands to disable NetworkManager:
-```
-rm -v /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
-rm -v /etc/systemd/system/multi-user.target.wants/NetworkManager.service
-```
-
-* Update, install whatever you need
-```
 apt update
-apt full-upgrade
-apt install mc
+apt -y install mc lsof
+...
+```
+* Change the password!
+* If required, change the locale to en_US.UTF8: `dpkg-reconfigure locales`
+* Modify the hostname: `vi -o /etc/hosts /etc/hostname`
+* Use a `/etc/netplan` file to define a static IP address:
+```
+# /etc/netplan/eth0.yaml
+network:
+  version: 2
+  renderer: networkd
+
+  ethernets:
+    eth0:
+      addresses:
+        - 192.168.1.91/24
+      gateway4: 192.168.1.254
+      nameservers:
+        search: [ lan ]
+        addresses: [ 192.168.1.254 ]
 ```
 
 * Add `/etc/docker/daemon.json`:
@@ -84,8 +68,8 @@ EOF
 
 * Enable IP forwarding and use classic iptables:
 ```
-sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
 update-alternatives --set iptables /usr/sbin/iptables-legacy
+sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
 ```
 
 * Disable IPv6:
@@ -107,7 +91,10 @@ EOF
 
 ```
 
-* Using `armbian-config` -> `System` -> `Other`, switch to a kernel 5.7 or higher, for example `linux-image-dev-odroidxu4/20/08/01, 5.7.15-odroidxu4`.
+* Update distro:
+```
+apt full-upgrade
+```
 * Reboot
 
 ## Kubernetes
@@ -125,7 +112,7 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update
 apt-get install -y kubeadm kubectl kubectx # Master
-apt-get install -y kubeadm kubelet kubectx # Workers
+apt-get install -y kubeadm kubelet         # Workers
 ```
 
 * You can check _cgroups_ validity:
@@ -243,6 +230,7 @@ Shortcuts:
 
 Apparently the solution was to:
 
-	* Include `--apiserver-advertise-address=0.0.0.0` in `kubeadm init`;
-	* include `cgroupDriver: systemd` in `/var/lib/kubelet/config.yaml` before installing Flannel;
-	* include `failSwapOn: false` in `/var/lib/kubelet/config.yaml` before installing Flannel.
+	* [DISCARDED] Include `--apiserver-advertise-address=0.0.0.0` in `kubeadm init`;
+	* [DISCARDED] include `cgroupDriver: systemd` in `/var/lib/kubelet/config.yaml` before installing Flannel;
+	* [DISCARDED] include `failSwapOn: false` in `/var/lib/kubelet/config.yaml` before installing Flannel.
+	* Delete the configuration "--port=0" in `/etc/kubernetes/manifests/controller-manager.conf` and `/etc/kubernetes/manifests/scheduler.conf` (verifiable with `kc get cs`).
