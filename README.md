@@ -29,7 +29,7 @@ passwd
 passwd rodolfoap
 
 apt update
-apt -y install mc lsof
+apt -y install mc lsof rsync
 ...
 ```
 * Change the password!
