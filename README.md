@@ -2,7 +2,7 @@
 
 The Odroid-MC1: https://www.hardkernel.com/shop/odroid-mc1-my-cluster-one-with-32-cpu-cores-and-8gb-dram/
 
-![OcroidMC1](https://github.com/rodolfoap/odroid-k8s-ubuntu/blob/master/mc1.jpg)
+![OcroidMC1](https://raw.githubusercontent.com/rodolfoap/odroid-k8s-ubuntu/dev/mc1.jpg)
 
 This is a setup reference to install and run a small Odroid-MC1+Ubuntu+Kubernetes cluster.
 
