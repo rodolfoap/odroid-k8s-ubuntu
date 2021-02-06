@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 DISTRO=ubuntu-20.04-5.4-minimal-odroid-xu4-20210112.img.xz
 

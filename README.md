@@ -31,6 +31,7 @@ apt update
 apt -y install mc lsof rsync curl
 ...
 ```
+
 * Change the password!
 * If required, change the locale to en_US.UTF8: `dpkg-reconfigure locales`
 * Modify the hostname: `vi -o /etc/hosts /etc/hostname`
@@ -67,8 +68,8 @@ EOF
 
 * Enable IP forwarding and use classic iptables:
 ```
-update-alternatives --set iptables /usr/sbin/iptables-legacy
 sed -i '/net.ipv4.ip_forward/s/#//' /etc/sysctl.conf
+update-alternatives --set iptables /usr/sbin/iptables-legacy
 ```
 
 * Disable IPv6:
@@ -105,7 +106,6 @@ apt-get install linux-image-5.8.0-38-generic linux-headers-5.8.0-38-generic
 ```
 swapoff -a # Just in case, check /proc/swaps being empty
 
-### curl -sL get.docker.com|sh
 apt install docker.io
 usermod -aG docker rodolfoap
 systemctl unmask docker
@@ -116,6 +116,12 @@ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.l
 apt-get update
 apt-get install -y kubeadm kubectl # Master
 apt-get install -y kubeadm kubelet # Workers
+```
+
+* You can check _cgroups_ validity:
+```
+wget https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh -O cgroups_check && chmod +x cgroups_check
+./cgroups_check
 ```
 
 ## Master Node

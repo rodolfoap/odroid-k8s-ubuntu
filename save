@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -z "$1" ] && { echo "Usage: $0 [DEVICE] # e.g. /dev/sdc2"; exit; }
+[ -z "$1" ] && { echo "Usage: $0 [DEVICE] # e.g. /dev/sdc1"; exit; }
 (cd dat; tar cfz ../dat.tz .)
 
 set -x
